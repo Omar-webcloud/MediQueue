@@ -1,65 +1,201 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+
+const slides = [
+  {
+    title: "Unlock Your Potential with Expert Tutors",
+    description: "Find the best educators to guide you through your academic journey.",
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Flexible Learning Schedules",
+    description: "Book sessions that fit perfectly into your busy life.",
+    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Master New Skills Faster",
+    description: "One-on-one personalized sessions for optimized learning.",
+    image: "https://images.unsplash.com/photo-1513258496099-48168024aec0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  },
+];
+
+export default function HomePage() {
+  const [tutors, setTutors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTutors = async () => {
+      try {
+        const res = await fetch("/api/tutors?limit=6");
+        if (res.ok) {
+          const data = await res.json();
+          setTutors(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch tutors:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchTutors();
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col gap-20 pb-20">
+      {/* Banner Section */}
+      <section className="w-full">
+        <Carousel
+          plugins={[Autoplay({ delay: 5000 })]}
+          className="w-full"
+          opts={{ loop: true }}
+        >
+          <CarouselContent>
+            {slides.map((slide, index) => (
+              <CarouselItem key={index}>
+                <div className="relative h-[600px] w-full">
+                  <div className="absolute inset-0 bg-black/50 z-10" />
+                  <img src={slide.image} alt={slide.title} className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
+                    <h1 className="text-5xl md:text-6xl font-bold mb-6 max-w-4xl">{slide.title}</h1>
+                    <p className="text-xl mb-8 max-w-2xl">{slide.description}</p>
+                    <Button asChild size="lg" className="text-lg px-8 py-6">
+                      <Link href="/tutors">Find Tutors Now</Link>
+                    </Button>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="hidden md:block">
+            <CarouselPrevious className="left-8 z-30" />
+            <CarouselNext className="right-8 z-30" />
+          </div>
+        </Carousel>
+      </section>
+
+      {/* Extra Section 1: Stats */}
+      <section className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200">
+          <div className="p-4">
+            <h3 className="text-4xl font-bold text-primary mb-2">500+</h3>
+            <p className="text-gray-600 font-medium">Expert Tutors</p>
+          </div>
+          <div className="p-4">
+            <h3 className="text-4xl font-bold text-primary mb-2">10k+</h3>
+            <p className="text-gray-600 font-medium">Active Students</p>
+          </div>
+          <div className="p-4">
+            <h3 className="text-4xl font-bold text-primary mb-2">50k+</h3>
+            <p className="text-gray-600 font-medium">Sessions Completed</p>
+          </div>
+          <div className="p-4">
+            <h3 className="text-4xl font-bold text-primary mb-2">4.9/5</h3>
+            <p className="text-gray-600 font-medium">Average Rating</p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Available Tutors Section */}
+      <section className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Available Tutors</h2>
+          <p className="text-lg text-gray-600">Discover our top-rated educators ready to help you succeed.</p>
         </div>
-      </main>
+
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : tutors.length === 0 ? (
+          <div className="text-center text-gray-500 py-12">
+            No tutors available at the moment.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+            {tutors.map((tutor) => (
+              <Card key={tutor.id} className="flex flex-col h-full">
+                <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+                  <img 
+                    src={tutor.photoUrl || "https://via.placeholder.com/400x200"} 
+                    alt={tutor.name}
+                    className="w-full h-full object-cover transition-transform hover:scale-105"
+                  />
+                </div>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-xl mb-1">{tutor.name}</CardTitle>
+                      <CardDescription>{tutor.institution}</CardDescription>
+                    </div>
+                    <Badge variant="secondary">{tutor.subject}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1 space-y-2 text-sm text-gray-600">
+                  <p><strong>Mode:</strong> {tutor.teachingMode}</p>
+                  <p><strong>Time:</strong> {tutor.availableTime}</p>
+                  <p><strong>Fee:</strong> ${tutor.hourlyFee}/hr</p>
+                  <p><strong>Slots:</strong> {tutor.totalSlot}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full">
+                    <Link href={`/tutors/${tutor.id}`}>Book Session</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+        
+        {tutors.length > 0 && (
+          <div className="text-center mt-8">
+            <Button asChild variant="outline" size="lg">
+              <Link href="/tutors">View All Tutors</Link>
+            </Button>
+          </div>
+        )}
+      </section>
+
+      {/* Extra Section 2: How It Works */}
+      <section className="bg-gray-50 py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Booking a session on MediQueue is simple, fast, and secure. Follow these simple steps.</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <span className="text-3xl font-bold text-primary">1</span>
+              </div>
+              <h3 className="text-2xl font-semibold mb-4">Find a Tutor</h3>
+              <p className="text-gray-600">Browse through our extensive list of verified and highly-rated tutors.</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <span className="text-3xl font-bold text-primary">2</span>
+              </div>
+              <h3 className="text-2xl font-semibold mb-4">Book a Session</h3>
+              <p className="text-gray-600">Select an available time slot that fits your schedule and book instantly.</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <span className="text-3xl font-bold text-primary">3</span>
+              </div>
+              <h3 className="text-2xl font-semibold mb-4">Start Learning</h3>
+              <p className="text-gray-600">Connect with your tutor and start mastering your subject today.</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -5,12 +5,17 @@ import crypto from "crypto";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
+  const limit = searchParams.get('limit');
   
   const db = getDb();
   let tutors = db.tutors;
   
   if (userId) {
     tutors = tutors.filter(t => t.userId === userId);
+  }
+  
+  if (limit) {
+    tutors = tutors.slice(0, parseInt(limit, 10));
   }
   
   return NextResponse.json(tutors);
