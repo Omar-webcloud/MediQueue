@@ -1,0 +1,119 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #171717;
+}
+
+.navLinks {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navLinks a {
+  text-decoration: none;
+  color: #171717;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navLinks a:hover {
+  color: #0070f3;
+}
+
+.auth {
+  display: flex;
+  align-items: center;
+}
+
+.authLinks {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.authLinks a,
+.mockToggle {
+  text-decoration: none;
+  color: #171717;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 1rem;
+}
+
+.registerBtn {
+  background-color: #0070f3 !important;
+  color: #ffffff !important;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.registerBtn:hover {
+  background-color: #005bb5 !important;
+}
+
+.mockToggle {
+  font-size: 0.8rem;
+  color: #888;
+  text-decoration: underline;
+}
+
+.profileMenu {
+  position: relative;
+}
+
+.profileImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  z-index: 10;
+}
+
+.dropdown a,
+.dropdown button {
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: #171717;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dropdown a:hover,
+.dropdown button:hover {
+  background-color: #f9f9f9;
+}
