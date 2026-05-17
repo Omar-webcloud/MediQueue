@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import styles from "./Navbar.module.css";
 
@@ -11,7 +12,9 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}>
-        <Link href="/">Website Name</Link>
+        <Link href="/">
+          <Image src="/logo.png" alt="MediQueue Logo" width={150} height={40} className={styles.logoImg} style={{ objectFit: "contain" }} />
+        </Link>
       </div>
       <ul className={styles.navLinks}>
         <li>
@@ -39,7 +42,6 @@ export default function Navbar() {
           <div className={styles.authLinks}>
             <Link href="/login">Login</Link>
             <Link href="/register" className={styles.registerBtn}>Register</Link>
-            <button onClick={() => setIsLoggedIn(true)} className={styles.mockToggle}>Mock Login</button>
           </div>
         ) : (
           <div className={styles.profileMenu}>
