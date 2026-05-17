@@ -121,7 +121,6 @@ export default function RegisterPage() {
                 placeholder="https://example.com/photo.jpg" 
                 value={formData.photo}
                 onChange={handleChange}
-                required 
               />
             </div>
             
