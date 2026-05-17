@@ -82,22 +82,22 @@ export default function HomePage() {
 
       {/* Extra Section 1: Stats */}
       <section className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800">
           <div className="p-4">
             <h3 className="text-4xl font-bold text-primary mb-2">500+</h3>
-            <p className="text-gray-600 font-medium">Expert Tutors</p>
+            <p className="text-gray-600 dark:text-gray-400 font-medium">Expert Tutors</p>
           </div>
           <div className="p-4">
             <h3 className="text-4xl font-bold text-primary mb-2">10k+</h3>
-            <p className="text-gray-600 font-medium">Active Students</p>
+            <p className="text-gray-600 dark:text-gray-400 font-medium">Active Students</p>
           </div>
           <div className="p-4">
             <h3 className="text-4xl font-bold text-primary mb-2">50k+</h3>
-            <p className="text-gray-600 font-medium">Sessions Completed</p>
+            <p className="text-gray-600 dark:text-gray-400 font-medium">Sessions Completed</p>
           </div>
           <div className="p-4">
             <h3 className="text-4xl font-bold text-primary mb-2">4.9/5</h3>
-            <p className="text-gray-600 font-medium">Average Rating</p>
+            <p className="text-gray-600 dark:text-gray-400 font-medium">Average Rating</p>
           </div>
         </div>
       </section>
@@ -105,8 +105,8 @@ export default function HomePage() {
       {/* Available Tutors Section */}
       <section className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Available Tutors</h2>
-          <p className="text-lg text-gray-600">Discover our top-rated educators ready to help you succeed.</p>
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Available Tutors</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400">Discover our top-rated educators ready to help you succeed.</p>
         </div>
 
         {loading ? (
@@ -120,8 +120,8 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
             {tutors.map((tutor) => (
-              <Card key={tutor._id} className="flex flex-col h-full">
-                <div className="relative aspect-square w-full overflow-hidden rounded-t-lg bg-gray-50">
+              <Card key={tutor._id} className="flex flex-col h-full bg-white dark:bg-card dark:border-border">
+                <div className="relative aspect-square w-full overflow-hidden rounded-t-lg bg-gray-50 dark:bg-background">
                   <img 
                     src={tutor.photo || "https://via.placeholder.com/400x400"} 
                     alt={tutor.tutorName}
@@ -131,13 +131,13 @@ export default function HomePage() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-xl mb-1">{tutor.tutorName}</CardTitle>
-                      <CardDescription>{tutor.institution}</CardDescription>
+                      <CardTitle className="text-xl mb-1 text-gray-900 dark:text-white">{tutor.tutorName}</CardTitle>
+                      <CardDescription className="text-gray-500 dark:text-gray-400">{tutor.institution}</CardDescription>
                     </div>
                     <Badge variant="secondary">{tutor.subject}</Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-1 space-y-2 text-sm text-gray-600">
+                <CardContent className="flex-1 space-y-2 text-sm text-gray-600 dark:text-gray-300">
                   <p><strong>Mode:</strong> {tutor.teachingMode}</p>
                   <p><strong>Days:</strong> {tutor.availableDays?.join(", ")}</p>
                   <p><strong>Time:</strong> {tutor.availableTimeSlot}</p>
@@ -160,11 +160,11 @@ export default function HomePage() {
       </section>
 
       {/* Extra Section 2: How It Works */}
-      <section className="bg-gray-50 py-20">
+      <section className="bg-gray-50 dark:bg-muted/10 py-20 border-t border-b dark:border-border">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Booking a session on MediQueue is simple, fast, and secure. Follow these simple steps.</p>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">How It Works</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Booking a session on MediQueue is simple, fast, and secure. Follow these simple steps.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
@@ -172,22 +172,22 @@ export default function HomePage() {
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <span className="text-3xl font-bold text-primary">1</span>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Find a Tutor</h3>
-              <p className="text-gray-600">Browse through our extensive list of verified and highly-rated tutors.</p>
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Find a Tutor</h3>
+              <p className="text-gray-600 dark:text-gray-400">Browse through our extensive list of verified and highly-rated tutors.</p>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <span className="text-3xl font-bold text-primary">2</span>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Book a Session</h3>
-              <p className="text-gray-600">Select an available time slot that fits your schedule and book instantly.</p>
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Book a Session</h3>
+              <p className="text-gray-600 dark:text-gray-400">Select an available time slot that fits your schedule and book instantly.</p>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <span className="text-3xl font-bold text-primary">3</span>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Start Learning</h3>
-              <p className="text-gray-600">Connect with your tutor and start mastering your subject today.</p>
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Start Learning</h3>
+              <p className="text-gray-600 dark:text-gray-400">Connect with your tutor and start mastering your subject today.</p>
             </div>
           </div>
         </div>
