@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { buttonVariants } from "@/components/ui/button";
 
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
@@ -24,7 +25,7 @@ export default function Navbar() {
         <li>
           <Link href="/tutors" className="hover:text-primary transition-colors">Tutors</Link>
         </li>
-        {isLoggedIn && (
+        {user && (
           <>
             <li>
               <Link href="/add-tutor" className="hover:text-primary transition-colors">Add Tutor</Link>
@@ -40,7 +41,7 @@ export default function Navbar() {
       </ul>
 
       <div className="flex items-center gap-4">
-        {!isLoggedIn ? (
+        {!user ? (
           <div className="flex items-center gap-4">
             <Link href="/login" className="font-medium text-gray-700 hover:text-primary">Login</Link>
             <Link href="/register" className={buttonVariants()}>Register</Link>
@@ -48,7 +49,7 @@ export default function Navbar() {
         ) : (
           <div className="relative">
             <img 
-              src="https://via.placeholder.com/40" 
+              src={user?.photo || "https://via.placeholder.com/40"} 
               alt="Profile" 
               className="w-10 h-10 rounded-full cursor-pointer object-cover border border-gray-200 hover:ring-2 ring-primary transition-all" 
               onClick={() => setDropdownOpen(!dropdownOpen)} 
@@ -61,7 +62,7 @@ export default function Navbar() {
                 <button 
                   className="px-4 py-2 text-sm text-left text-red-600 hover:bg-gray-100"
                   onClick={() => {
-                    setIsLoggedIn(false);
+                    logout();
                     setDropdownOpen(false);
                   }}
                 >

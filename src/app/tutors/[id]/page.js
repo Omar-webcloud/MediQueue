@@ -8,12 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 export default function TutorDetailsPage({ params }) {
   const router = useRouter();
   const unwrappedParams = use(params);
   const { id } = unwrappedParams;
+  const { user } = useAuth();
   
   const [tutor, setTutor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,10 +24,21 @@ export default function TutorDetailsPage({ params }) {
   const [modalOpen, setModalOpen] = useState(false);
   
   const [bookingData, setBookingData] = useState({
-    studentName: "Student 1",
+    studentName: "",
     phone: "",
-    studentEmail: "student1@example.com"
+    studentEmail: ""
   });
+
+  // Pre-fill user data once loaded
+  useEffect(() => {
+    if (user) {
+      setBookingData(prev => ({
+        ...prev,
+        studentName: user.name || "",
+        studentEmail: user.email || ""
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchTutor = async () => {
@@ -126,7 +140,8 @@ export default function TutorDetailsPage({ params }) {
   if (!tutor) return null;
 
   return (
-    <div className="container mx-auto py-12 px-4 max-w-4xl">
+    <ProtectedRoute>
+      <div className="container mx-auto py-12 px-4 max-w-4xl">
       <Card className="overflow-hidden">
         <div className="md:flex">
           <div className="md:w-1/3">
@@ -221,5 +236,6 @@ export default function TutorDetailsPage({ params }) {
         </div>
       </Card>
     </div>
+    </ProtectedRoute>
   );
 }

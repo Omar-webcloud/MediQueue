@@ -7,9 +7,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 export default function MyTutorsPage() {
+  const { user } = useAuth();
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -20,12 +23,15 @@ export default function MyTutorsPage() {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    fetchTutors();
-  }, []);
+    if (user) {
+      fetchTutors();
+    }
+  }, [user]);
 
   const fetchTutors = async () => {
+    if (!user) return;
     try {
-      const res = await fetch("/api/tutors?userId=u1");
+      const res = await fetch(`/api/tutors?userId=${user.id}`);
       if (res.ok) {
         const data = await res.json();
         setTutors(data);
@@ -102,7 +108,8 @@ export default function MyTutorsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 px-4">
+    <ProtectedRoute>
+      <div className="container mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-8">My Tutors</h1>
       
       {tutors.length === 0 ? (
@@ -213,5 +220,6 @@ export default function MyTutorsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </ProtectedRoute>
   );
 }

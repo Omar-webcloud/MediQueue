@@ -5,9 +5,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 export default function MySessionsPage() {
+  const { user } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -15,12 +18,15 @@ export default function MySessionsPage() {
   const [currentSession, setCurrentSession] = useState(null);
 
   useEffect(() => {
-    fetchSessions();
-  }, []);
+    if (user) {
+      fetchSessions();
+    }
+  }, [user]);
 
   const fetchSessions = async () => {
+    if (!user) return;
     try {
-      const res = await fetch("/api/bookings?studentEmail=student1@example.com");
+      const res = await fetch(`/api/bookings?studentEmail=${user.email}`);
       if (res.ok) {
         const data = await res.json();
         setSessions(data);
@@ -64,7 +70,8 @@ export default function MySessionsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 px-4 max-w-5xl">
+    <ProtectedRoute>
+      <div className="container mx-auto py-10 px-4 max-w-5xl">
       <h1 className="text-3xl font-bold mb-8">My Booked Sessions</h1>
       
       {sessions.length === 0 ? (
@@ -129,5 +136,6 @@ export default function MySessionsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 export default function AddTutorPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -42,8 +45,8 @@ export default function AddTutorPage() {
     try {
       const payload = {
         ...formData,
-        userId: 'u1',
-        userEmail: 'student1@example.com'
+        userId: user?.id || 'u1',
+        userEmail: user?.email || 'student1@example.com'
       };
       
       const res = await fetch("/api/tutors", {
@@ -66,7 +69,8 @@ export default function AddTutorPage() {
   };
 
   return (
-    <div className="container mx-auto py-10 px-4 max-w-3xl">
+    <ProtectedRoute>
+      <div className="container mx-auto py-10 px-4 max-w-3xl">
       <Card>
         <CardHeader>
           <CardTitle className="text-3xl text-primary font-bold">Add Tutor</CardTitle>
@@ -154,5 +158,6 @@ export default function AddTutorPage() {
         </CardContent>
       </Card>
     </div>
+    </ProtectedRoute>
   );
 }
