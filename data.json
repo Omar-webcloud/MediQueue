@@ -1,0 +1,11 @@
+{
+  "tutors": [],
+  "bookings": [],
+  "users": [
+    {
+      "id": "u1",
+      "name": "Student 1",
+      "email": "student1@example.com"
+    }
+  ]
+}

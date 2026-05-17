@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,16 +16,19 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "MediQueue",
-  description: "MediQueue App",
+  description: "MediQueue Tutor Booking Platform",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>
+      <body className="min-h-screen flex flex-col font-sans antialiased bg-background text-foreground">
         <Navbar />
-        <main>{children}</main>
+        <main className="flex-1">
+          {children}
+        </main>
         <Footer />
+        <Toaster position="top-right" />
       </body>
     </html>
   );
