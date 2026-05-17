@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/auth/login", {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -44,7 +46,7 @@ export function AuthProvider({ children }) {
 
   const register = async (name, email, password, photo) => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/auth/register", {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, photo }),
@@ -70,7 +72,7 @@ export function AuthProvider({ children }) {
         googleId: "google-123456"
       };
 
-      const res = await fetch("http://127.0.0.1:5000/api/auth/googleAuth", {
+      const res = await fetch(`${API_URL}/api/auth/googleAuth`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(mockGoogleUser),
