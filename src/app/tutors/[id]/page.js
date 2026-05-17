@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import toast from "react-hot-toast";
 
 export default function TutorDetailsPage({ params }) {
@@ -26,7 +27,8 @@ export default function TutorDetailsPage({ params }) {
   const [bookingData, setBookingData] = useState({
     studentName: "",
     phone: "",
-    studentEmail: ""
+    studentEmail: "",
+    sessionDate: ""
   });
 
   // Pre-fill user data once loaded
@@ -43,10 +45,15 @@ export default function TutorDetailsPage({ params }) {
   useEffect(() => {
     const fetchTutor = async () => {
       try {
-        const res = await fetch(`/api/tutors/${id}`);
+        const res = await apiFetch(`/api/tutors/${id}`);
         if (res.ok) {
           const data = await res.json();
-          setTutor(data);
+          setTutor(data.tutor);
+          // Set initial sessionDate to the tutor's sessionStartDate if available
+          if (data.tutor?.sessionStartDate) {
+            const formattedDate = new Date(data.tutor.sessionStartDate).toISOString().split("T")[0];
+            setBookingData(prev => ({ ...prev, sessionDate: formattedDate }));
+          }
         } else {
           toast.error("Tutor not found");
           router.push("/tutors");
@@ -74,12 +81,11 @@ export default function TutorDetailsPage({ params }) {
       return false;
     }
     
-    const sessionDate = new Date(tutor.sessionDate);
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
+    const minSessionDate = new Date(tutor.sessionStartDate);
+    const selectedDate = new Date(bookingData.sessionDate);
     
-    if (currentDate < sessionDate) {
-      toast.error("Booking is not available yet for this tutor");
+    if (selectedDate < minSessionDate) {
+      toast.error(`Session date must be on or after ${minSessionDate.toLocaleDateString()}`);
       return false;
     }
     
@@ -94,22 +100,20 @@ export default function TutorDetailsPage({ params }) {
     try {
       const payload = {
         ...bookingData,
-        tutorId: tutor.id,
-        tutorName: tutor.name,
+        tutorId: tutor._id,
+        tutorName: tutor.tutorName,
+        sessionTime: tutor.availableTimeSlot
       };
       
-      const res = await fetch("/api/bookings", {
+      const res = await apiFetch("/api/bookings", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(payload),
       });
       
       const data = await res.json();
       
       if (!res.ok) {
-        throw new Error(data.error || "Failed to book session");
+        throw new Error(data.message || "Failed to book session");
       }
       
       toast.success("Session booked successfully!");
@@ -146,8 +150,8 @@ export default function TutorDetailsPage({ params }) {
         <div className="md:flex">
           <div className="md:w-1/3">
             <img 
-              src={tutor.photoUrl || "https://via.placeholder.com/400x400"} 
-              alt={tutor.name}
+              src={tutor.photo || "https://via.placeholder.com/400x400"} 
+              alt={tutor.tutorName}
               className="w-full h-full object-cover min-h-[300px]"
             />
           </div>
@@ -155,7 +159,7 @@ export default function TutorDetailsPage({ params }) {
             <div>
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{tutor.name}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{tutor.tutorName}</h1>
                   <p className="text-lg text-gray-600">{tutor.institution}</p>
                   <p className="text-gray-500">{tutor.location}</p>
                 </div>
@@ -172,12 +176,16 @@ export default function TutorDetailsPage({ params }) {
                   <p className="font-medium text-gray-900">${tutor.hourlyFee}/hr</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-wider">Available Time</p>
-                  <p className="font-medium text-gray-900">{tutor.availableTime}</p>
+                  <p className="text-sm text-gray-500 uppercase tracking-wider">Available Days</p>
+                  <p className="font-medium text-gray-900">{tutor.availableDays?.join(", ")}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-wider">Session Date</p>
-                  <p className="font-medium text-gray-900">{new Date(tutor.sessionDate).toLocaleDateString()}</p>
+                  <p className="text-sm text-gray-500 uppercase tracking-wider">Available Time</p>
+                  <p className="font-medium text-gray-900">{tutor.availableTimeSlot}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 uppercase tracking-wider">Session Start Date</p>
+                  <p className="font-medium text-gray-900">{new Date(tutor.sessionStartDate).toLocaleDateString()}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 uppercase tracking-wider">Available Slots</p>
@@ -199,17 +207,17 @@ export default function TutorDetailsPage({ params }) {
                   <DialogHeader>
                     <DialogTitle>Book Session</DialogTitle>
                     <DialogDescription>
-                      Confirm your details to book a session with {tutor.name}.
+                      Confirm your details to book a session with {tutor.tutorName}.
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleBookSession} className="space-y-4 py-4">
                     <div className="space-y-2">
                       <Label htmlFor="tutorId">Tutor ID</Label>
-                      <Input id="tutorId" value={tutor.id} disabled />
+                      <Input id="tutorId" value={tutor._id} disabled />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="tutorName">Tutor Name</Label>
-                      <Input id="tutorName" value={tutor.name} disabled />
+                      <Input id="tutorName" value={tutor.tutorName} disabled />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="studentName">Student Name</Label>
@@ -222,6 +230,10 @@ export default function TutorDetailsPage({ params }) {
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
                       <Input id="phone" name="phone" value={bookingData.phone} onChange={handleBookingChange} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="sessionDate">Session Date</Label>
+                      <Input id="sessionDate" name="sessionDate" type="date" value={bookingData.sessionDate} onChange={handleBookingChange} required />
                     </div>
                     <DialogFooter>
                       <Button type="submit" disabled={bookingLoading} className="w-full mt-4">

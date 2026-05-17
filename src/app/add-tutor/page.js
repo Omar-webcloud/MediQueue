@@ -8,26 +8,31 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import toast from "react-hot-toast";
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function AddTutorPage() {
   const router = useRouter();
-  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
-    name: "",
-    photoUrl: "",
+    tutorName: "",
+    photo: "",
     subject: "",
-    availableTime: "",
+    availableTimeSlot: "",
     hourlyFee: "",
     totalSlot: "",
-    sessionDate: "",
+    sessionStartDate: "",
     institution: "",
+    experience: "",
     location: "",
-    teachingMode: ""
+    teachingMode: "",
+    description: ""
   });
+
+  const [selectedDays, setSelectedDays] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,26 +43,38 @@ export default function AddTutorPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleDayChange = (day) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (selectedDays.length === 0) {
+      toast.error("Please select at least one available day");
+      return;
+    }
+
     setLoading(true);
     
     try {
       const payload = {
         ...formData,
-        userId: user?.id || 'u1',
-        userEmail: user?.email || 'student1@example.com'
+        availableDays: selectedDays,
+        hourlyFee: Number(formData.hourlyFee),
+        totalSlot: Number(formData.totalSlot),
       };
       
-      const res = await fetch("/api/tutors", {
+      const res = await apiFetch("/api/tutors", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(payload),
       });
       
-      if (!res.ok) throw new Error("Failed to add tutor");
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.message || "Failed to add tutor");
       
       toast.success("Tutor added successfully!");
       router.push("/tutors");
@@ -80,13 +97,13 @@ export default function AddTutorPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Tutor Name</Label>
-                <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
+                <Label htmlFor="tutorName">Tutor Name</Label>
+                <Input id="tutorName" name="tutorName" value={formData.tutorName} onChange={handleChange} required />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="photoUrl">Photo URL (ImgBB/Postimage link)</Label>
-                <Input id="photoUrl" name="photoUrl" value={formData.photoUrl} onChange={handleChange} required />
+                <Label htmlFor="photo">Photo URL (ImgBB/Postimage link)</Label>
+                <Input id="photo" name="photo" value={formData.photo} onChange={handleChange} required />
               </div>
               
               <div className="space-y-2">
@@ -105,10 +122,27 @@ export default function AddTutorPage() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="availableTime">Available Days & Time Slot</Label>
-                <Input id="availableTime" name="availableTime" placeholder="e.g. Sun - Thu 5:00 PM - 8:00 PM" value={formData.availableTime} onChange={handleChange} required />
+                <Label htmlFor="availableTimeSlot">Available Time Slot</Label>
+                <Input id="availableTimeSlot" name="availableTimeSlot" placeholder="e.g. 5:00 PM - 8:00 PM" value={formData.availableTimeSlot} onChange={handleChange} required />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label>Available Days</Label>
+                <div className="flex flex-wrap gap-4 mt-2">
+                  {DAYS.map((day) => (
+                    <label key={day} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedDays.includes(day)}
+                        onChange={() => handleDayChange(day)}
+                        className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                      />
+                      <span className="text-sm font-medium text-gray-700">{day}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -122,8 +156,8 @@ export default function AddTutorPage() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="sessionDate">Session Start Date</Label>
-                <Input id="sessionDate" name="sessionDate" type="date" value={formData.sessionDate} onChange={handleChange} required />
+                <Label htmlFor="sessionStartDate">Session Start Date</Label>
+                <Input id="sessionStartDate" name="sessionStartDate" type="date" value={formData.sessionStartDate} onChange={handleChange} required />
               </div>
               
               <div className="space-y-2">
@@ -141,13 +175,23 @@ export default function AddTutorPage() {
               </div>
               
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="institution">Institution & Experience</Label>
-                <Input id="institution" name="institution" placeholder="e.g. MIT, 5 years experience" value={formData.institution} onChange={handleChange} required />
+                <Label htmlFor="institution">Institution</Label>
+                <Input id="institution" name="institution" placeholder="e.g. MIT" value={formData.institution} onChange={handleChange} required />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="experience">Experience</Label>
+                <Input id="experience" name="experience" placeholder="e.g. 5 years experience" value={formData.experience} onChange={handleChange} required />
               </div>
               
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="location">Location (Area/City)</Label>
                 <Input id="location" name="location" placeholder="e.g. New York City" value={formData.location} onChange={handleChange} required />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="description">Description (Optional)</Label>
+                <Input id="description" name="description" placeholder="e.g. Friendly and experienced..." value={formData.description} onChange={handleChange} />
               </div>
             </div>
             

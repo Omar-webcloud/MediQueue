@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import toast from "react-hot-toast";
 
 export default function MySessionsPage() {
-  const { user } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -18,18 +17,15 @@ export default function MySessionsPage() {
   const [currentSession, setCurrentSession] = useState(null);
 
   useEffect(() => {
-    if (user) {
-      fetchSessions();
-    }
-  }, [user]);
+    fetchSessions();
+  }, []);
 
   const fetchSessions = async () => {
-    if (!user) return;
     try {
-      const res = await fetch(`/api/bookings?studentEmail=${user.email}`);
+      const res = await apiFetch("/api/bookings/my-bookings");
       if (res.ok) {
         const data = await res.json();
-        setSessions(data);
+        setSessions(data.bookings || []);
       }
     } catch (error) {
       toast.error("Failed to load your sessions");
@@ -45,15 +41,15 @@ export default function MySessionsPage() {
 
   const handleCancel = async () => {
     try {
-      const res = await fetch(`/api/bookings/${currentSession.id}`, {
+      const res = await apiFetch(`/api/bookings/${currentSession._id}/cancel`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "cancelled" }),
       });
       
-      if (!res.ok) throw new Error("Failed to cancel session");
+      const data = await res.json();
       
-      setSessions(prev => prev.map(s => s.id === currentSession.id ? { ...s, status: "cancelled" } : s));
+      if (!res.ok) throw new Error(data.message || "Failed to cancel session");
+      
+      setSessions(prev => prev.map(s => s._id === currentSession._id ? { ...s, bookStatus: "cancelled" } : s));
       toast.success("Session cancelled successfully");
       setCancelModalOpen(false);
     } catch (error) {
@@ -87,19 +83,21 @@ export default function MySessionsPage() {
                 <TableHead>Tutor Name</TableHead>
                 <TableHead>Student Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Session Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sessions.map((session) => (
-                <TableRow key={session.id}>
+                <TableRow key={session._id}>
                   <TableCell className="font-medium">{session.tutorName}</TableCell>
                   <TableCell>{session.studentName}</TableCell>
                   <TableCell>{session.studentEmail}</TableCell>
+                  <TableCell>{new Date(session.sessionDate).toLocaleDateString()}</TableCell>
                   <TableCell>
-                    <Badge variant={session.status === "cancelled" ? "destructive" : "default"}>
-                      {session.status}
+                    <Badge variant={session.bookStatus === "cancelled" ? "destructive" : "default"}>
+                      {session.bookStatus}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -107,7 +105,7 @@ export default function MySessionsPage() {
                       variant="outline" 
                       size="sm"
                       className="text-destructive border-destructive hover:bg-destructive/10"
-                      disabled={session.status === "cancelled"}
+                      disabled={session.bookStatus === "cancelled"}
                       onClick={() => openCancelModal(session)}
                     >
                       Cancel

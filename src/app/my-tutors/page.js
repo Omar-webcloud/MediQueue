@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import toast from "react-hot-toast";
 
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 export default function MyTutorsPage() {
-  const { user } = useAuth();
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -21,20 +22,18 @@ export default function MyTutorsPage() {
   const [currentTutor, setCurrentTutor] = useState(null);
   
   const [formData, setFormData] = useState({});
+  const [selectedDays, setSelectedDays] = useState([]);
 
   useEffect(() => {
-    if (user) {
-      fetchTutors();
-    }
-  }, [user]);
+    fetchTutors();
+  }, []);
 
   const fetchTutors = async () => {
-    if (!user) return;
     try {
-      const res = await fetch(`/api/tutors?userId=${user.id}`);
+      const res = await apiFetch("/api/tutors/my-tutors/list");
       if (res.ok) {
         const data = await res.json();
-        setTutors(data);
+        setTutors(data.tutors || []);
       }
     } catch (error) {
       toast.error("Failed to load your tutors");
@@ -45,7 +44,28 @@ export default function MyTutorsPage() {
 
   const openEditModal = (tutor) => {
     setCurrentTutor(tutor);
-    setFormData(tutor);
+    
+    // Format start date to YYYY-MM-DD
+    let formattedDate = "";
+    if (tutor.sessionStartDate) {
+      formattedDate = new Date(tutor.sessionStartDate).toISOString().split("T")[0];
+    }
+
+    setFormData({
+      tutorName: tutor.tutorName || "",
+      photo: tutor.photo || "",
+      subject: tutor.subject || "",
+      availableTimeSlot: tutor.availableTimeSlot || "",
+      hourlyFee: tutor.hourlyFee || "",
+      totalSlot: tutor.totalSlot || "",
+      sessionStartDate: formattedDate,
+      institution: tutor.institution || "",
+      experience: tutor.experience || "",
+      location: tutor.location || "",
+      teachingMode: tutor.teachingMode || "",
+      description: tutor.description || ""
+    });
+    setSelectedDays(tutor.availableDays || []);
     setEditModalOpen(true);
   };
 
@@ -63,19 +83,37 @@ export default function MyTutorsPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleDayChange = (day) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (selectedDays.length === 0) {
+      toast.error("Please select at least one day");
+      return;
+    }
+
     try {
-      const res = await fetch(`/api/tutors/${currentTutor.id}`, {
+      const payload = {
+        ...formData,
+        availableDays: selectedDays,
+        hourlyFee: Number(formData.hourlyFee),
+        totalSlot: Number(formData.totalSlot),
+      };
+
+      const res = await apiFetch(`/api/tutors/${currentTutor._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       
-      if (!res.ok) throw new Error("Failed to update");
+      const data = await res.json();
       
-      const updatedTutor = await res.json();
-      setTutors(prev => prev.map(t => t.id === updatedTutor.id ? updatedTutor : t));
+      if (!res.ok) throw new Error(data.message || "Failed to update");
+      
+      setTutors(prev => prev.map(t => t._id === data.tutor._id ? data.tutor : t));
       toast.success("Tutor updated successfully");
       setEditModalOpen(false);
     } catch (error) {
@@ -85,13 +123,15 @@ export default function MyTutorsPage() {
 
   const handleDelete = async () => {
     try {
-      const res = await fetch(`/api/tutors/${currentTutor.id}`, {
+      const res = await apiFetch(`/api/tutors/${currentTutor._id}`, {
         method: "DELETE",
       });
       
-      if (!res.ok) throw new Error("Failed to delete");
+      const data = await res.json();
       
-      setTutors(prev => prev.filter(t => t.id !== currentTutor.id));
+      if (!res.ok) throw new Error(data.message || "Failed to delete");
+      
+      setTutors(prev => prev.filter(t => t._id !== currentTutor._id));
       toast.success("Tutor deleted successfully");
       setDeleteModalOpen(false);
     } catch (error) {
@@ -131,8 +171,8 @@ export default function MyTutorsPage() {
             </TableHeader>
             <TableBody>
               {tutors.map((tutor) => (
-                <TableRow key={tutor.id}>
-                  <TableCell className="font-medium">{tutor.name}</TableCell>
+                <TableRow key={tutor._id}>
+                  <TableCell className="font-medium">{tutor.tutorName}</TableCell>
                   <TableCell>{tutor.subject}</TableCell>
                   <TableCell>${tutor.hourlyFee}/hr</TableCell>
                   <TableCell>{tutor.totalSlot}</TableCell>
@@ -160,8 +200,12 @@ export default function MyTutorsPage() {
           <form onSubmit={handleUpdate} className="space-y-4 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" value={formData.name || ""} onChange={handleEditChange} required />
+                <Label htmlFor="tutorName">Tutor Name</Label>
+                <Input id="tutorName" name="tutorName" value={formData.tutorName || ""} onChange={handleEditChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="photo">Photo URL</Label>
+                <Input id="photo" name="photo" value={formData.photo || ""} onChange={handleEditChange} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="hourlyFee">Hourly Fee</Label>
@@ -188,12 +232,53 @@ export default function MyTutorsPage() {
                 <Input id="totalSlot" name="totalSlot" type="number" value={formData.totalSlot || ""} onChange={handleEditChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="availableTime">Available Time</Label>
-                <Input id="availableTime" name="availableTime" value={formData.availableTime || ""} onChange={handleEditChange} required />
+                <Label htmlFor="availableTimeSlot">Available Time Slot</Label>
+                <Input id="availableTimeSlot" name="availableTimeSlot" value={formData.availableTimeSlot || ""} onChange={handleEditChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="sessionDate">Session Date</Label>
-                <Input id="sessionDate" name="sessionDate" type="date" value={formData.sessionDate || ""} onChange={handleEditChange} required />
+                <Label htmlFor="sessionStartDate">Session Start Date</Label>
+                <Input id="sessionStartDate" name="sessionStartDate" type="date" value={formData.sessionStartDate || ""} onChange={handleEditChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="teachingMode">Teaching Mode</Label>
+                <Select value={formData.teachingMode || ""} onValueChange={(v) => handleSelectChange("teachingMode", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Online">Online</SelectItem>
+                    <SelectItem value="Offline">Offline</SelectItem>
+                    <SelectItem value="Both">Both</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="institution">Institution</Label>
+                <Input id="institution" name="institution" value={formData.institution || ""} onChange={handleEditChange} required />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="experience">Experience</Label>
+                <Input id="experience" name="experience" value={formData.experience || ""} onChange={handleEditChange} required />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="location">Location</Label>
+                <Input id="location" name="location" value={formData.location || ""} onChange={handleEditChange} required />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label>Available Days</Label>
+                <div className="flex flex-wrap gap-4 mt-2">
+                  {DAYS.map((day) => (
+                    <label key={day} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedDays.includes(day)}
+                        onChange={() => handleDayChange(day)}
+                        className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                      />
+                      <span className="text-sm font-medium text-gray-700">{day}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
             <DialogFooter>
@@ -210,7 +295,7 @@ export default function MyTutorsPage() {
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete {currentTutor?.name} from our servers.
+              This action cannot be undone. This will permanently delete {currentTutor?.tutorName} from our servers.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4">

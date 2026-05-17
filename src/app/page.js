@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { apiFetch } from "@/lib/api";
 
 const slides = [
   {
@@ -33,10 +34,10 @@ export default function HomePage() {
   useEffect(() => {
     const fetchTutors = async () => {
       try {
-        const res = await fetch("/api/tutors?limit=6");
+        const res = await apiFetch("/api/tutors");
         if (res.ok) {
           const data = await res.json();
-          setTutors(data);
+          setTutors((data.tutors || []).slice(0, 6));
         }
       } catch (error) {
         console.error("Failed to fetch tutors:", error);
@@ -119,18 +120,18 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
             {tutors.map((tutor) => (
-              <Card key={tutor.id} className="flex flex-col h-full">
+              <Card key={tutor._id} className="flex flex-col h-full">
                 <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
                   <img 
-                    src={tutor.photoUrl || "https://via.placeholder.com/400x200"} 
-                    alt={tutor.name}
+                    src={tutor.photo || "https://via.placeholder.com/400x200"} 
+                    alt={tutor.tutorName}
                     className="w-full h-full object-cover transition-transform hover:scale-105"
                   />
                 </div>
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-xl mb-1">{tutor.name}</CardTitle>
+                      <CardTitle className="text-xl mb-1">{tutor.tutorName}</CardTitle>
                       <CardDescription>{tutor.institution}</CardDescription>
                     </div>
                     <Badge variant="secondary">{tutor.subject}</Badge>
@@ -138,12 +139,13 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent className="flex-1 space-y-2 text-sm text-gray-600">
                   <p><strong>Mode:</strong> {tutor.teachingMode}</p>
-                  <p><strong>Time:</strong> {tutor.availableTime}</p>
+                  <p><strong>Days:</strong> {tutor.availableDays?.join(", ")}</p>
+                  <p><strong>Time:</strong> {tutor.availableTimeSlot}</p>
                   <p><strong>Fee:</strong> ${tutor.hourlyFee}/hr</p>
                   <p><strong>Slots:</strong> {tutor.totalSlot}</p>
                 </CardContent>
                 <CardFooter>
-                  <Link href={`/tutors/${tutor.id}`} className={buttonVariants({ className: "w-full" })}>Book Session</Link>
+                  <Link href={`/tutors/${tutor._id}`} className={buttonVariants({ className: "w-full" })}>Book Session</Link>
                 </CardFooter>
               </Card>
             ))}
