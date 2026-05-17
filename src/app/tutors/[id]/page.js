@@ -81,9 +81,17 @@ export default function TutorDetailsPage({ params }) {
       return false;
     }
     
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const minSessionDate = new Date(tutor.sessionStartDate);
-    const selectedDate = new Date(bookingData.sessionDate);
+    minSessionDate.setHours(0, 0, 0, 0);
     
+    if (today < minSessionDate) {
+      toast.error("Booking is not available yet for this tutor");
+      return false;
+    }
+    
+    const selectedDate = new Date(bookingData.sessionDate);
     if (selectedDate < minSessionDate) {
       toast.error(`Session date must be on or after ${minSessionDate.toLocaleDateString()}`);
       return false;
