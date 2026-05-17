@@ -147,15 +147,15 @@ export default function TutorDetailsPage({ params }) {
     <ProtectedRoute>
       <div className="container mx-auto py-12 px-4 max-w-4xl">
       <Card className="overflow-hidden">
-        <div className="md:flex">
-          <div className="md:w-1/3">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-1/3 aspect-square md:aspect-auto overflow-hidden bg-gray-50">
             <img 
               src={tutor.photo || "https://via.placeholder.com/400x400"} 
               alt={tutor.tutorName}
               className="w-full h-full object-cover min-h-[300px]"
             />
           </div>
-          <div className="md:w-2/3 p-6 flex flex-col justify-between">
+          <div className="w-full md:w-2/3 p-6 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-start mb-4">
                 <div>
@@ -166,7 +166,7 @@ export default function TutorDetailsPage({ params }) {
                 <Badge variant="default" className="text-lg py-1 px-3">{tutor.subject}</Badge>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                 <div>
                   <p className="text-sm text-gray-500 uppercase tracking-wider">Teaching Mode</p>
                   <p className="font-medium text-gray-900">{tutor.teachingMode}</p>

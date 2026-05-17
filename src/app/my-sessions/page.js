@@ -76,7 +76,7 @@ export default function MySessionsPage() {
           <p className="text-gray-500">You haven't booked any sessions yet.</p>
         </div>
       ) : (
-        <div className="border rounded-md">
+        <div className="border rounded-md overflow-x-auto w-full">
           <Table>
             <TableHeader>
               <TableRow>

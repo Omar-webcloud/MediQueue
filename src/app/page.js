@@ -61,13 +61,13 @@ export default function HomePage() {
           <CarouselContent>
             {slides.map((slide, index) => (
               <CarouselItem key={index}>
-                <div className="relative h-[600px] w-full">
+                <div className="relative h-[360px] sm:h-[450px] md:h-[600px] w-full">
                   <div className="absolute inset-0 bg-black/50 z-10" />
                   <img src={slide.image} alt={slide.title} className="absolute inset-0 w-full h-full object-cover" />
                   <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
-                    <h1 className="text-5xl md:text-6xl font-bold mb-6 max-w-4xl">{slide.title}</h1>
-                    <p className="text-xl mb-8 max-w-2xl">{slide.description}</p>
-                    <Link href="/tutors" className={buttonVariants({ size: "lg", className: "text-lg px-8 py-6" })}>Find Tutors Now</Link>
+                    <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 max-w-4xl leading-tight">{slide.title}</h1>
+                    <p className="text-sm sm:text-lg md:text-xl mb-6 md:mb-8 max-w-2xl">{slide.description}</p>
+                    <Link href="/tutors" className={buttonVariants({ className: "text-xs sm:text-base px-5 py-2.5 sm:px-8 sm:py-6" })}>Find Tutors Now</Link>
                   </div>
                 </div>
               </CarouselItem>
@@ -121,9 +121,9 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
             {tutors.map((tutor) => (
               <Card key={tutor._id} className="flex flex-col h-full">
-                <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+                <div className="relative aspect-square w-full overflow-hidden rounded-t-lg bg-gray-50">
                   <img 
-                    src={tutor.photo || "https://via.placeholder.com/400x200"} 
+                    src={tutor.photo || "https://via.placeholder.com/400x400"} 
                     alt={tutor.tutorName}
                     className="w-full h-full object-cover transition-transform hover:scale-105"
                   />

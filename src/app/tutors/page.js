@@ -53,9 +53,9 @@ export default function TutorsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {tutors.map((tutor) => (
             <Card key={tutor._id} className="flex flex-col h-full">
-              <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+              <div className="relative aspect-square w-full overflow-hidden rounded-t-lg bg-gray-50">
                 <img 
-                  src={tutor.photo || "https://via.placeholder.com/400x200"} 
+                  src={tutor.photo || "https://via.placeholder.com/400x400"} 
                   alt={tutor.tutorName}
                   className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
