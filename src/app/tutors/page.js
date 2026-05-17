@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default function TutorsPage() {
@@ -74,9 +74,7 @@ export default function TutorsPage() {
                 <p><strong>Slots:</strong> {tutor.totalSlot}</p>
               </CardContent>
               <CardFooter>
-                <Button asChild className="w-full">
-                  <Link href={`/tutors/${tutor.id}`}>Book Session</Link>
-                </Button>
+                <Link href={`/tutors/${tutor.id}`} className={buttonVariants({ className: "w-full" })}>Book Session</Link>
               </CardFooter>
             </Card>
           ))}

@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import DynamicTitle from "@/components/DynamicTitle";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="min-h-screen flex flex-col font-sans antialiased bg-background text-foreground">
+        <DynamicTitle />
         <Navbar />
         <main className="flex-1">
           {children}

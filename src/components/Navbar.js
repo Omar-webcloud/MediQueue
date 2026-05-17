@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -43,9 +43,7 @@ export default function Navbar() {
         {!isLoggedIn ? (
           <div className="flex items-center gap-4">
             <Link href="/login" className="font-medium text-gray-700 hover:text-primary">Login</Link>
-            <Button asChild>
-              <Link href="/register">Register</Link>
-            </Button>
+            <Link href="/register" className={buttonVariants()}>Register</Link>
           </div>
         ) : (
           <div className="relative">

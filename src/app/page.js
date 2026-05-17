@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -66,9 +66,7 @@ export default function HomePage() {
                   <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
                     <h1 className="text-5xl md:text-6xl font-bold mb-6 max-w-4xl">{slide.title}</h1>
                     <p className="text-xl mb-8 max-w-2xl">{slide.description}</p>
-                    <Button asChild size="lg" className="text-lg px-8 py-6">
-                      <Link href="/tutors">Find Tutors Now</Link>
-                    </Button>
+                    <Link href="/tutors" className={buttonVariants({ size: "lg", className: "text-lg px-8 py-6" })}>Find Tutors Now</Link>
                   </div>
                 </div>
               </CarouselItem>
@@ -145,9 +143,7 @@ export default function HomePage() {
                   <p><strong>Slots:</strong> {tutor.totalSlot}</p>
                 </CardContent>
                 <CardFooter>
-                  <Button asChild className="w-full">
-                    <Link href={`/tutors/${tutor.id}`}>Book Session</Link>
-                  </Button>
+                  <Link href={`/tutors/${tutor.id}`} className={buttonVariants({ className: "w-full" })}>Book Session</Link>
                 </CardFooter>
               </Card>
             ))}
@@ -156,9 +152,7 @@ export default function HomePage() {
         
         {tutors.length > 0 && (
           <div className="text-center mt-8">
-            <Button asChild variant="outline" size="lg">
-              <Link href="/tutors">View All Tutors</Link>
-            </Button>
+            <Link href="/tutors" className={buttonVariants({ variant: "outline", size: "lg" })}>View All Tutors</Link>
           </div>
         )}
       </section>
