@@ -147,7 +147,8 @@ export default function Navbar() {
             <>
               <Link href="/add-tutor" className="py-2 hover:text-primary transition-colors border-b border-gray-100" onClick={() => setMenuOpen(false)}>Add Tutor</Link>
               <Link href="/my-tutors" className="py-2 hover:text-primary transition-colors border-b border-gray-100" onClick={() => setMenuOpen(false)}>My Tutors</Link>
-              <Link href="/my-sessions" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>My Booked Sessions</Link>
+              <Link href="/my-sessions" className="py-2 hover:text-primary transition-colors border-b border-gray-100" onClick={() => setMenuOpen(false)}>My Booked Sessions</Link>
+              <Link href="/profile" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>Profile</Link>
             </>
           )}
         </div>
