@@ -1,18 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { apiFetch } from "@/lib/api";
 
-export default function TutorsPage() {
+function TutorsContent() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") || "";
+  const initialStartDate = searchParams.get("startDate") || "";
+  const initialEndDate = searchParams.get("endDate") || "";
+
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [search, setSearch] = useState(initialSearch);
+  const [startDate, setStartDate] = useState(initialStartDate);
+  const [endDate, setEndDate] = useState(initialEndDate);
 
   const fetchTutors = async (searchVal = "", startVal = "", endVal = "") => {
     setLoading(true);
@@ -37,8 +43,11 @@ export default function TutorsPage() {
   };
 
   useEffect(() => {
-    fetchTutors();
-  }, []);
+    setSearch(initialSearch);
+    setStartDate(initialStartDate);
+    setEndDate(initialEndDate);
+    fetchTutors(initialSearch, initialStartDate, initialEndDate);
+  }, [initialSearch, initialStartDate, initialEndDate]);
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -50,10 +59,10 @@ export default function TutorsPage() {
       {/* Search and Filter Panel */}
       <div className="bg-white dark:bg-card border dark:border-border rounded-lg p-6 mb-8 shadow-sm flex flex-col md:flex-row gap-4 items-end">
         <div className="flex-1 w-full space-y-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search Tutor Name</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search Tutor Name or Subject</label>
           <input
             type="text"
-            placeholder="Search by name..."
+            placeholder="Search by name or subject..."
             className="w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary dark:bg-background dark:border-border dark:text-foreground text-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -144,5 +153,17 @@ export default function TutorsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function TutorsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <TutorsContent />
+    </Suspense>
   );
 }

@@ -7,10 +7,10 @@ export default function Footer() {
         <div>
           <h4 className="text-lg font-semibold mb-4 text-zinc-100">Learning Services</h4>
           <ul className="space-y-3">
-            <li><Link href="/services/math" className="text-zinc-400 hover:text-primary transition-colors text-sm">Math Tutoring</Link></li>
-            <li><Link href="/services/science" className="text-zinc-400 hover:text-primary transition-colors text-sm">Science Classes</Link></li>
-            <li><Link href="/services/language" className="text-zinc-400 hover:text-primary transition-colors text-sm">Language Arts</Link></li>
-            <li><Link href="/services/test-prep" className="text-zinc-400 hover:text-primary transition-colors text-sm">Test Preparation</Link></li>
+            <li><Link href="/tutors?search=Mathematics" className="text-zinc-400 hover:text-primary transition-colors text-sm">Math Tutoring</Link></li>
+            <li><Link href="/tutors?search=Physics" className="text-zinc-400 hover:text-primary transition-colors text-sm">Physics Classes</Link></li>
+            <li><Link href="/tutors?search=English" className="text-zinc-400 hover:text-primary transition-colors text-sm">Language Arts</Link></li>
+            <li><Link href="/tutors?search=Computer%20Science" className="text-zinc-400 hover:text-primary transition-colors text-sm">Computer Science</Link></li>
           </ul>
         </div>
         
