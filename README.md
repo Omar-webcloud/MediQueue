@@ -1,6 +1,6 @@
 # MediQueue
 
-A comprehensive client-side tutor booking and educational queue management platform built for modern students and educators.
+A comprehensive tutor booking and educational queue management platform built for modern students and educators.
 
 Live URL: [https://medi-queue-smoky.vercel.app/](https://medi-queue-smoky.vercel.app/)
 
